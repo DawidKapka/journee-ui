@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
 import Feed from "@/views/Feed.vue";
 import Search from "@/views/Search.vue";
 import Profile from "@/views/Profile.vue";
 
-const routes: Array<RouteRecordRaw> = [
+const routes = [
   {
     path: '/',
     redirect: '/home'

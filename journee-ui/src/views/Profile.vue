@@ -2,58 +2,121 @@
 <ion-page>
   <div class="content">
     <div class="overview">
-      <div class="user-info">
+      <div class="user-info" v-if="!userNotFound">
         <div class="profile-pic-container">
           <img src="../assets/profile-pic-default.jpg" alt="Profile Picture" class="profile-pic">
         </div>
         <div class="stats">
           <div class="stat">
-            <h2 class="stat-value text-light">10</h2>
+            <h2 class="stat-value text-light">{{ formatNumber(userInfo.journeyAmount) ?? '...' }}</h2>
             <p class="stat-title text-light">journeys</p>
           </div>
           <div class="stat">
-            <h2 class="stat-value text-light">420k</h2>
+            <h2 class="stat-value text-light">{{ formatNumber(userInfo.followers) ?? '...'}}</h2>
             <p class="stat-title text-light">followers</p>
           </div>
           <div class="stat">
-            <h2 class="stat-value text-light">69</h2>
+            <h2 class="stat-value text-light">{{ formatNumber(userInfo.following) ?? '...'}}</h2>
             <p class="stat-title text-light">following</p>
           </div>
         </div>
       </div>
-      <div class="username-container">
+      <div class="username-container" v-if="!userNotFound">
         <div class="username-wrapper">
-          <h2 class="username text-light">Test User</h2>
-          <p class="user-tag text-light subtext">@testuser_</p>
+          <h2 class="username text-light">{{ userInfo.username ?? ' ' }}</h2>
+          <p class="user-tag text-light subtext">@{{userInfo.usertag}}</p>
         </div>
       </div>
-      <div class="bio">
+      <div class="bio" v-if="!userNotFound">
         <p class="bio-text text-light">
-          Hi there, welcome to Journee! Feel free to look through my journey memories.
+          {{ userInfo.bio ?? '...'}}
         </p>
       </div>
-      <div class="options">
-        <button-component theme="inverted">edit profile</button-component>
+      <div class="options" v-if="!userNotFound">
+        <button-component theme="inverted" v-if="isOwnProfile">edit profile</button-component>
+        <button-component theme="inverted" v-if="!isOwnProfile && !isFollowing" @click="follow">follow</button-component>
+        <button-component theme="success" v-if="!isOwnProfile && isFollowing" @click="unfollow">following</button-component>
         <button-component theme="inverted">
           <i class="pi pi-list"></i>
         </button-component>
       </div>
     </div>
-    <div class="journeys">
-      <journey-cover-component class="journey"></journey-cover-component>
-      <journey-cover-component class="journey"></journey-cover-component>
-      <journey-cover-component class="journey"></journey-cover-component>
-      <journey-cover-component class="journey"></journey-cover-component>
-      <journey-cover-component class="journey"></journey-cover-component>
+    <div class="not-found" v-if="userNotFound">
+      <h2 class="not-found-text">Sorry, this user doesn't exist.</h2>
+    </div>
+    <div class="journeys" v-if="!userNotFound">
+      <journey-cover-component v-for="journey of journeyPreviews" :key="journey.jid" :title="journey.title" :imageUrl="journey.imageUrl"></journey-cover-component>
     </div>
   </div>
 </ion-page>
 </template>
 
 <script setup lang="ts">
-
 import ButtonComponent from "@/components/ButtonComponent.vue";
 import JourneyCoverComponent from "@/components/JourneyCoverComponent.vue";
+import {onMounted, ref} from "vue";
+import {UserInfo} from "../types/User";
+import {userAdapter} from "../adapter/UserAdapter";
+import {useRoute} from "vue-router";
+import {JourneyPreview} from "../types/JourneyPreview";
+import {journeyAdapter} from "../adapter/JourneyAdapter";
+
+let isFollowing = ref(false)
+let isOwnProfile = ref(false);
+let userInfo = ref({} as UserInfo)
+let journeyPreviews = ref([] as JourneyPreview[])
+let userNotFound = ref(false)
+
+const route = useRoute()
+
+onMounted(() => {
+  console.log(route.query.uid);
+  if (!route.query.uid) {
+    userNotFound.value = true;
+  } else {
+    userAdapter.fetchUserProfile().then(info => {
+      userInfo.value = info as UserInfo
+      journeyAdapter.fetchAllJourneyPreviewsForUser(userInfo.value.usertag).then(journeys => journeyPreviews.value = journeys as JourneyPreview[])
+    })
+  }
+})
+
+const follow = () => {
+  isFollowing.value = true
+  // TODO
+}
+
+const unfollow = () => {
+  isFollowing.value = false;
+}
+
+const formatNumber = (number) => {
+  if (number) {
+    const numbers = `${number}`.split('')
+    if (numbers.length === 4) {
+      return `${numbers[0]}'${numbers[1]}${numbers[2]}${numbers[3]}`
+    }
+    if (numbers.length === 5) {
+      return `${numbers[0]}${numbers[1]}'${numbers[2]}${numbers[3]}${numbers[4]}`
+    }
+    if (numbers.length === 6) {
+      return `${numbers[0]}${numbers[1]}${numbers[2]}k`
+    }
+    if (numbers.length === 6) {
+      return `${numbers[0]}${numbers[1]}${numbers[2]}k`
+    }
+    if (numbers.length === 7) {
+      return `${numbers[0]}.${numbers[1]}M`
+    }
+    if (numbers.length === 8) {
+      return `${numbers[0]}${numbers[1]}.${numbers[2]}M`
+    }
+    if (numbers.length === 9) {
+      return `${numbers[0]}${numbers[1]}${numbers[2]}.${numbers[3]}M`
+    }
+    return numbers.join('')
+  } else return undefined
+}
 </script>
 
 <style lang="scss">
@@ -62,7 +125,7 @@ import JourneyCoverComponent from "@/components/JourneyCoverComponent.vue";
 
 .content {
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -121,12 +184,11 @@ import JourneyCoverComponent from "@/components/JourneyCoverComponent.vue";
 
 .journeys {
   width: calc(100% - 4em);
-  height: calc(100% - 10em);
   padding: 2em 2em 5em 2em;
   overflow-y: scroll;
 
   .journey {
-    margin-bottom: 1em;
+    margin-bottom: 2em;
   }
 }
 
@@ -142,5 +204,11 @@ import JourneyCoverComponent from "@/components/JourneyCoverComponent.vue";
     flex-direction: column;
     align-items: center;
   }
+}
+
+.not-found-text {
+  width: 100vw;
+  text-align: center;
+  margin-top: 2em;
 }
 </style>

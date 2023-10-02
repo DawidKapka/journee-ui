@@ -1,12 +1,11 @@
 <template>
   <ion-app>
-    <ion-router-outlet />
+    <router-view />
     <navbar></navbar>
   </ion-app>
 </template>
 
 <script setup lang="ts">
-import { IonApp, IonRouterOutlet } from '@ionic/vue';
 import Navbar from "@/components/NavbarComponent.vue";
 </script>
 
@@ -18,6 +17,7 @@ import Navbar from "@/components/NavbarComponent.vue";
 
 body {
   color: $color-black;
+  overflow: hidden;
   margin: 0;
   background: $color-white;
   font-family: 'Roboto', sans-serif;

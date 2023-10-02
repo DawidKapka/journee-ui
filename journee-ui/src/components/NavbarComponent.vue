@@ -14,11 +14,18 @@
 
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {Tab} from "@/types/Tab.js";
 import router from "@/router";
+import {useRoute} from "vue-router";
 
 let currentTab = ref(Tab.FEED)
+
+const route = useRoute()
+
+onMounted(() => {
+  toggleTab(mapPathToTab(route.path))
+})
 
 const toggleTab = (tab) => {
   router.push(mapTabToPath(tab))
@@ -32,9 +39,22 @@ const mapTabToPath = (tab) => {
     case Tab.SEARCH:
       return '/search';
     case Tab.PROFILE:
-      return '/user';
+      return '/user?uid=testuser_';
     default:
       return '/home';
+  }
+}
+
+const mapPathToTab = (path) => {
+  switch (path.split('/')[1]) {
+    case 'home':
+      return Tab.FEED;
+    case 'search':
+      return Tab.SEARCH;
+    case 'user':
+      return Tab.PROFILE;
+    default:
+      return Tab.FEED;
   }
 }
 
