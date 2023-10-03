@@ -7,18 +7,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import InputComponent from './InputComponent.vue'
+import InputComponent from '../InputComponent.vue'
 
 const emit = defineEmits(['search'])
 
 const search = (event) => {
-  if (event) {
+  console.log(1);
+  if (event && event.trim()) {
     emit('search', event)
   }
 }
 </script>
 <style lang="scss">
-@import "../style/colors.scss";
+@import "../../style/colors";
 
 .searchbar {
   display: flex;

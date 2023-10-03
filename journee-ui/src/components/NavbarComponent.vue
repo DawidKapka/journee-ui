@@ -18,13 +18,18 @@ import {onMounted, ref} from "vue";
 import {Tab} from "@/types/Tab.js";
 import router from "@/router";
 import {useRoute} from "vue-router";
+import {userAdapter} from "../adapter/UserAdapter";
 
 let currentTab = ref(Tab.FEED)
 
 const route = useRoute()
 
 onMounted(() => {
-  toggleTab(mapPathToTab(route.path))
+  userAdapter.fetchCurrentUser().then(user => {
+    if (route.query.uid && route.query.uid !== user.usertag) {
+      currentTab.value = Tab.SEARCH
+    }
+  })
 })
 
 const toggleTab = (tab) => {

@@ -14,7 +14,7 @@ const input = () => {
 }
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import '../style/misc.scss';
 @import '../style/colors.scss';
 

@@ -2,6 +2,9 @@
 <ion-page>
   <div class="content">
     <div class="overview">
+      <div class="back" @click="goBack" v-if="back">
+        <i class="pi pi-angle-double-left"></i>
+      </div>
       <div class="user-info" v-if="!userNotFound">
         <div class="profile-pic-container">
           <img src="../assets/profile-pic-default.jpg" alt="Profile Picture" class="profile-pic">
@@ -57,7 +60,7 @@ import JourneyCoverComponent from "@/components/JourneyCoverComponent.vue";
 import {onMounted, ref} from "vue";
 import {UserInfo} from "../types/User";
 import {userAdapter} from "../adapter/UserAdapter";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {JourneyPreview} from "../types/JourneyPreview";
 import {journeyAdapter} from "../adapter/JourneyAdapter";
 
@@ -66,11 +69,15 @@ let isOwnProfile = ref(false);
 let userInfo = ref({} as UserInfo)
 let journeyPreviews = ref([] as JourneyPreview[])
 let userNotFound = ref(false)
+let back = ref(false)
 
 const route = useRoute()
+const router = useRouter()
 
 onMounted(() => {
-  console.log(route.query.uid);
+  if (route.query.b && route.query.b === '1') {
+    back.value = true;
+  }
   if (!route.query.uid) {
     userNotFound.value = true;
   } else {
@@ -80,6 +87,10 @@ onMounted(() => {
     })
   }
 })
+
+const goBack = () => {
+  router.back()
+}
 
 const follow = () => {
   isFollowing.value = true
@@ -210,5 +221,21 @@ const formatNumber = (number) => {
   width: 100vw;
   text-align: center;
   margin-top: 2em;
+}
+
+.back {
+  width: 2.5em;
+  height: 2.5em;
+  position: absolute;
+  top: 1em;
+  left: .5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  i {
+    color: $color-white;
+    font-size: 1.5em;
+  }
 }
 </style>
