@@ -1,21 +1,30 @@
 <template>
   <div class="searchbar">
-    <input-component class="input" @input="search"></input-component>
-    <div class="search-icon">
+    <input-component class="input" @input="search" :value="searchStore.$state.searchValue"></input-component>
+    <div class="input-icon" v-if="searchStore.$state.searchValue === ''">
       <i class="pi pi-search"></i>
+    </div>
+    <div v-else class="input-icon" @click="clearInput">
+      <i class="pi pi-times"></i>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import InputComponent from '../InputComponent.vue'
+import { useSearchStore } from "../../store/SearchStore";
 
 const emit = defineEmits(['search'])
+const searchStore = useSearchStore()
 
 const search = (event) => {
-  console.log(1);
-  if (event && event.trim()) {
+  if (event) {
     emit('search', event)
   }
+}
+
+const clearInput = () => {
+  searchStore.searchValue = ''
+  emit('search', '')
 }
 </script>
 <style lang="scss">
@@ -29,7 +38,7 @@ const search = (event) => {
     width: 85%;
   }
 
-  .search-icon {
+  .input-icon {
     width: 15%;
     display: flex;
     justify-content: space-around;

@@ -7,7 +7,7 @@
     </header>
     <div class="results">
       <loading-component v-if="loading"></loading-component>
-      <div class="search-results" v-if="!loading && (searchResults.journeys || searchResults.users)">
+      <div class="search-results" v-if="!loading && (searchStore.searchResults.journeys || searchStore.searchResults.users)">
         <div class="filters">
           <div class="user-results" :class="{'active': usersShown}" @click="toggleUsers">
             <p>users</p>
@@ -29,24 +29,31 @@
 <script setup lang="ts">
 import SearchbarComponent from '../components/search/SearchbarComponent.vue';
 import LoadingComponent from '../components/LoadingComponent.vue';
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {SearchResults} from "../types/SearchResults";
 import {userAdapter} from "../adapter/UserAdapter";
 import {journeyAdapter} from "../adapter/JourneyAdapter";
 import SearchResult from '../components/search/SearchResult.vue';
 import {ResultType} from "../types/Search";
+import {useSearchStore} from "../store/SearchStore";
 
 let loading = ref(false)
 let usersShown = ref(true)
 let journeysShown = ref(true)
 
-const searchResults = ref({} as SearchResults)
+const searchStore = useSearchStore()
+
+onMounted(() => {
+
+})
 
 const search = async (event) => {
+  console.log(event);
+  searchStore.searchValue = event
   loading.value = true;
   const users = await userAdapter.queryUsers(event)
   const journeys = await journeyAdapter.queryJourneys(event);
-  searchResults.value = {
+  searchStore.searchResults = {
     journeys,
     users
   }
@@ -61,12 +68,12 @@ const getResultItems = () => {
   // TODO sort
   const items = []
   if (usersShown.value) {
-    searchResults.value.users.forEach(user => {
+    searchStore.searchResults.users.forEach(user => {
       items.push({type: ResultType.USER, result: user})
     })
   }
   if (journeysShown.value) {
-    searchResults.value.journeys.forEach(journey => {
+    searchStore.searchResults.journeys.forEach(journey => {
       items.push({ type: ResultType.JOURNEY, result: journey})
     })
   }

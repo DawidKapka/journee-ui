@@ -3,9 +3,18 @@
 </template>
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {defineProps, onMounted, ref} from "vue";
 
 const emit = defineEmits(['input'])
+const props = defineProps<{
+  value: string
+}>()
+
+onMounted(() => {
+  if (props.value) {
+    text.value = props.value
+  }
+})
 
 let text = ref('')
 
