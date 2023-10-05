@@ -1,25 +1,27 @@
 <template>
-  <input type="text" v-model="text" class="input" placeholder="Search..." @input="input()">
+  <input type="text" v-model="searchStore.searchValue" class="input" placeholder="Search..." @input="input()">
 </template>
 <script setup lang="ts">
 
-import {defineProps, onMounted, ref} from "vue";
+import {defineProps, onMounted} from "vue";
+import {useSearchStore} from "../store/SearchStore";
 
-const emit = defineEmits(['input'])
+const emit = defineEmits(['update:modelValue', 'input'])
 const props = defineProps<{
-  value: string
+  modelValue: string
 }>()
+const searchStore = useSearchStore()
 
 onMounted(() => {
-  if (props.value) {
-    text.value = props.value
+
+  if (props.modelValue) {
+    searchStore.searchValue = props.modelValue
   }
 })
 
-let text = ref('')
-
 const input = () => {
-  emit('input', text.value)
+  emit('update:modelValue', searchStore.searchValue)
+  emit('input', searchStore.searchValue)
 }
 
 </script>

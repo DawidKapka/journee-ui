@@ -7,7 +7,7 @@
     </header>
     <div class="results">
       <loading-component v-if="loading"></loading-component>
-      <div class="search-results" v-if="!loading && (searchStore.searchResults.journeys || searchStore.searchResults.users)">
+      <div class="search-results" v-if="!loading && (searchStore.searchResults.journeys.length > 0 || searchStore.searchResults.users.length > 0)">
         <div class="filters">
           <div class="user-results" :class="{'active': usersShown}" @click="toggleUsers">
             <p>users</p>
@@ -30,7 +30,6 @@
 import SearchbarComponent from '../components/search/SearchbarComponent.vue';
 import LoadingComponent from '../components/LoadingComponent.vue';
 import {onMounted, ref} from "vue";
-import {SearchResults} from "../types/SearchResults";
 import {userAdapter} from "../adapter/UserAdapter";
 import {journeyAdapter} from "../adapter/JourneyAdapter";
 import SearchResult from '../components/search/SearchResult.vue';
@@ -43,19 +42,21 @@ let journeysShown = ref(true)
 
 const searchStore = useSearchStore()
 
-onMounted(() => {
-
-})
-
 const search = async (event) => {
-  console.log(event);
-  searchStore.searchValue = event
   loading.value = true;
-  const users = await userAdapter.queryUsers(event)
-  const journeys = await journeyAdapter.queryJourneys(event);
-  searchStore.searchResults = {
-    journeys,
-    users
+  if (!event) {
+    searchStore.searchResults = {
+      journeys: [],
+      users: []
+    }
+  } else {
+    const users = await userAdapter.queryUsers(event)
+    const journeys = await journeyAdapter.queryJourneys(event);
+    searchStore.searchResults = {
+      journeys,
+      users
+    }
+    console.log(searchStore.searchResults);
   }
   loading.value = false
 }

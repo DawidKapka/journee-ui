@@ -28,6 +28,12 @@ onMounted(() => {
   userAdapter.fetchCurrentUser().then(user => {
     if (route.query.uid && route.query.uid !== user.usertag) {
       currentTab.value = Tab.SEARCH
+    } else if (route.path.startsWith('/search')) {
+      currentTab.value = Tab.SEARCH
+    } else if (route.path.startsWith('/home')) {
+      currentTab.value = Tab.FEED;
+    } else {
+      currentTab.value = Tab.PROFILE
     }
   })
 })

@@ -8,10 +8,11 @@ export type SearchStoreState = {
 
 export const useSearchStore = defineStore( {
     id: 'search',
-    state: (): SearchStoreState => {
-        return {
+    state: (): SearchStoreState => ({
             searchValue: '',
-            searchResults: {} as SearchResults
-        }
-    }
+            searchResults: {
+                journeys: [],
+                users: []
+            } as SearchResults
+    })
 })

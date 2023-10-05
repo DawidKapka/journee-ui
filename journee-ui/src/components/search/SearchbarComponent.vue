@@ -1,7 +1,7 @@
 <template>
   <div class="searchbar">
-    <input-component class="input" @input="search" :value="searchStore.$state.searchValue"></input-component>
-    <div class="input-icon" v-if="searchStore.$state.searchValue === ''">
+    <input-component class="input" @input="search" v-model="searchStore.searchValue"></input-component>
+    <div class="input-icon" v-if="searchStore.searchValue === ''" @click="search">
       <i class="pi pi-search"></i>
     </div>
     <div v-else class="input-icon" @click="clearInput">
