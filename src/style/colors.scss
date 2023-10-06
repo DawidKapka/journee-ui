@@ -1,0 +1,29 @@
+$color-red-100: #3c0919;
+$color-red-80: #7d1128;
+$color-red-60: #c41e3d;
+$color-red-40: #e2294f;
+$color-red-20: #ff2c55;
+$color-red-active: #de2b4c;
+
+$color-white: #ffffff;
+$color-white-active: #ededed;
+
+$color-black: #0d1321;
+
+$color-warning: #ff9505;
+$color-success: #7ac74f;
+
+$color-primary: $color-red-40;
+$color-primary-active: $color-red-active;
+
+@function black-opacity($o) {
+  @return rgba(13, 19, 33, $o);
+}
+
+@function white-opacity($o) {
+  @return rgba(255, 255, 255, $o)
+}
+
+@function primary-opacity($o) {
+  @return rgba(226, 41, 79, $o)
+}
